@@ -16,7 +16,7 @@ class CustomButton extends StatelessWidget {
   final double height;
   final Color? backgroundColor;
   final bool isLoading;
-  final IconData? icon;
+  final Widget? icon;
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +40,7 @@ class CustomButton extends StatelessWidget {
             : Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(icon),
+                  icon!,
                   const SizedBox(width: 8),
                   Text(text, style: Theme.of(context).textTheme.labelLarge),
                 ],
