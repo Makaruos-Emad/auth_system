@@ -1,6 +1,6 @@
 import 'dart:io';
+import 'package:auth_system/core/services/pick_image.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 
 class UserImage extends StatefulWidget {
   const UserImage({super.key});
@@ -10,20 +10,12 @@ class UserImage extends StatefulWidget {
 }
 
 class _UserImageState extends State<UserImage> {
-  final ImagePicker _picker = ImagePicker();
   File? _image;
 
-  Future<void> _pickImage() async {
-    final XFile? pickedImage = await _picker.pickImage(
-      source: ImageSource.gallery,
-      imageQuality: 80,
-    );
-
-    if (pickedImage != null) {
-      setState(() {
-        _image = File(pickedImage.path);
-      });
-    }
+  void _onImagePicked(File image) {
+    setState(() {
+      _image = image;
+    });
   }
 
   @override
@@ -33,24 +25,13 @@ class _UserImageState extends State<UserImage> {
       children: [
         CircleAvatar(
           radius: 60,
-          backgroundColor: Colors.grey[300],
+          backgroundColor: Colors.grey.shade300,
           backgroundImage: _image != null ? FileImage(_image!) : null,
           child: _image == null
-              ? Icon(Icons.person, size: 50, color: Colors.grey[700])
+              ? Icon(Icons.person, size: 50, color: Colors.grey.shade700)
               : null,
         ),
-
-        GestureDetector(
-          onTap: _pickImage,
-          child: Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primary,
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(Icons.edit, color: Colors.white, size: 20),
-          ),
-        ),
+        PickImage(onImagePicked: _onImagePicked),
       ],
     );
   }
