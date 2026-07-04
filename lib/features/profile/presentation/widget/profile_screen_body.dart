@@ -1,7 +1,7 @@
-import 'package:auth_system/features/profile/presentation/widget/editable_profile_image.dart';
 import 'package:auth_system/features/profile/presentation/widget/account_action.dart';
 import 'package:auth_system/features/profile/presentation/widget/account_settings.dart';
 import 'package:auth_system/features/profile/presentation/widget/app_settings.dart';
+import 'package:auth_system/features/profile/presentation/widget/profile_image.dart';
 import 'package:flutter/material.dart';
 
 class ProfileScreenBody extends StatelessWidget {
@@ -13,7 +13,7 @@ class ProfileScreenBody extends StatelessWidget {
       child: Column(
         children: [
           const SizedBox(height: 30),
-          EditableProfileImage(imageUrl: null),
+          ProfileImage(imageUrl: null),
           const SizedBox(height: 20),
           Text("Name", style: Theme.of(context).textTheme.headlineMedium),
           const SizedBox(height: 10),

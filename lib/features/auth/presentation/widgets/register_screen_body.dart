@@ -1,9 +1,9 @@
 import 'package:auth_system/features/auth/presentation/screens/login_screen.dart';
+import 'package:auth_system/features/auth/presentation/widgets/auth_navigation_text.dart';
 import 'package:auth_system/features/auth/presentation/widgets/head_screen.dart';
 import 'package:auth_system/features/auth/presentation/widgets/login_with_google.dart';
 import 'package:auth_system/features/auth/presentation/widgets/register_form.dart';
 import 'package:auth_system/features/auth/presentation/widgets/row_divider.dart';
-import 'package:auth_system/features/auth/presentation/widgets/text_create_account.dart';
 import 'package:auth_system/features/auth/presentation/widgets/user_image.dart';
 import 'package:flutter/material.dart';
 
