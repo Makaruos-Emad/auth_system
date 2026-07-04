@@ -1,3 +1,4 @@
+import 'package:auth_system/features/auth/presentation/screens/forgot_password_screen.dart';
 import 'package:flutter/material.dart';
 
 class ForgotPassword extends StatelessWidget {
@@ -10,7 +11,12 @@ class ForgotPassword extends StatelessWidget {
       children: [
         GestureDetector(
           onTap: () {
-            // Handle forgot password logic here
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const ForgotPasswordScreen(),
+              ),
+            );
           },
           child: Text(
             "Forgot Password ?",
