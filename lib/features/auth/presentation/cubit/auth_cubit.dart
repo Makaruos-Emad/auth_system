@@ -59,7 +59,20 @@ class AuthCubit extends Cubit<AuthState> {
         password: password,
         image: image,
       );
-      _syncAuthState();
+
+      final currentUser = Supabase.instance.client.auth.currentUser;
+      if (currentUser != null) {
+        emit(
+          state.copyWith(
+            status: AuthStatus.authenticated,
+            user: currentUser,
+            errorMessage: null,
+          ),
+        );
+      } else {
+        await Future.delayed(const Duration(milliseconds: 500));
+        _syncAuthState();
+      }
     } on AuthException catch (e) {
       emit(state.copyWith(status: AuthStatus.error, errorMessage: e.message));
     } catch (e) {
@@ -74,6 +87,7 @@ class AuthCubit extends Cubit<AuthState> {
 
     try {
       await repository.signIn(email: email, password: password);
+      await Future.delayed(const Duration(milliseconds: 300));
       _syncAuthState();
     } on AuthException catch (e) {
       emit(state.copyWith(status: AuthStatus.error, errorMessage: e.message));
@@ -85,10 +99,17 @@ class AuthCubit extends Cubit<AuthState> {
   }
 
   Future<void> signOut() async {
-    emit(state.copyWith(status: AuthStatus.loading));
+    emit(
+      state.copyWith(
+        status: AuthStatus.unauthenticated,
+        clearUser: true,
+        errorMessage: null,
+      ),
+    );
 
     try {
       await repository.signOut();
+      await Future.delayed(const Duration(milliseconds: 300));
       _syncAuthState();
     } on AuthException catch (e) {
       emit(state.copyWith(status: AuthStatus.error, errorMessage: e.message));

@@ -3,6 +3,7 @@ import 'package:auth_system/core/shared/widget/custom_text_form_field.dart';
 import 'package:auth_system/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:auth_system/features/auth/presentation/cubit/auth_state.dart';
 import 'package:auth_system/features/auth/presentation/widgets/forgot_password.dart';
+import 'package:auth_system/features/profile/presentation/screens/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -30,6 +31,13 @@ class _LoginFormState extends State<LoginForm> {
   Widget build(BuildContext context) {
     return BlocConsumer<AuthCubit, AuthState>(
       listener: (context, state) {
+        if (state.status == AuthStatus.authenticated) {
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (_) => const ProfileScreen()),
+            (route) => false,
+          );
+        }
+
         if (state.status == AuthStatus.error) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(state.errorMessage ?? "Unknown Error")),
@@ -95,6 +103,7 @@ class _LoginFormState extends State<LoginForm> {
               CustomButton(
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
+                    FocusScope.of(context).unfocus();
                     context.read<AuthCubit>().signIn(
                       email: emailController.text.trim(),
                       password: passwordController.text.trim(),
