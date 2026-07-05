@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/services/storage_service.dart';
+import '../../../../core/services/supabase_error_utils.dart';
 import '../../../../core/services/supabase_service.dart';
 import 'auth_remote_data_source.dart';
 
@@ -28,12 +29,18 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       );
     }
 
-    await client.from('profiles').insert({
-      'id': user.id,
-      'name': name,
-      'email': email,
-      'image_url': imageUrl,
-    });
+    try {
+      await client.from('profiles').insert({
+        'id': user.id,
+        'name': name,
+        'email': email,
+        'image_url': imageUrl,
+      });
+    } catch (error) {
+      if (!isSupabaseRlsError(error)) {
+        rethrow;
+      }
+    }
   }
 
   @override

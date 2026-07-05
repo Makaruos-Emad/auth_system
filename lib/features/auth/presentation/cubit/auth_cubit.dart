@@ -11,33 +11,37 @@ class AuthCubit extends Cubit<AuthState> {
   StreamSubscription? _authSubscription;
   AuthCubit(this.repository) : super(const AuthState()) {
     _listenToAuthChanges();
+    _syncAuthState();
   }
 
   void _listenToAuthChanges() {
     _authSubscription = Supabase.instance.client.auth.onAuthStateChange.listen((
       data,
     ) {
-      final session = data.session;
-      final user = session?.user;
-
-      if (user != null) {
-        emit(
-          state.copyWith(
-            status: AuthStatus.authenticated,
-            user: user,
-            errorMessage: null,
-          ),
-        );
-      } else {
-        emit(
-          state.copyWith(
-            status: AuthStatus.unauthenticated,
-            user: null,
-            errorMessage: null,
-          ),
-        );
-      }
+      _syncAuthState(user: data.session?.user);
     });
+  }
+
+  void _syncAuthState({User? user}) {
+    final currentUser = user ?? Supabase.instance.client.auth.currentUser;
+
+    if (currentUser != null) {
+      emit(
+        state.copyWith(
+          status: AuthStatus.authenticated,
+          user: currentUser,
+          errorMessage: null,
+        ),
+      );
+    } else {
+      emit(
+        state.copyWith(
+          status: AuthStatus.unauthenticated,
+          clearUser: true,
+          errorMessage: null,
+        ),
+      );
+    }
   }
 
   Future<void> signUp({
@@ -55,6 +59,7 @@ class AuthCubit extends Cubit<AuthState> {
         password: password,
         image: image,
       );
+      _syncAuthState();
     } on AuthException catch (e) {
       emit(state.copyWith(status: AuthStatus.error, errorMessage: e.message));
     } catch (e) {
@@ -69,6 +74,7 @@ class AuthCubit extends Cubit<AuthState> {
 
     try {
       await repository.signIn(email: email, password: password);
+      _syncAuthState();
     } on AuthException catch (e) {
       emit(state.copyWith(status: AuthStatus.error, errorMessage: e.message));
     } catch (e) {
@@ -83,6 +89,7 @@ class AuthCubit extends Cubit<AuthState> {
 
     try {
       await repository.signOut();
+      _syncAuthState();
     } on AuthException catch (e) {
       emit(state.copyWith(status: AuthStatus.error, errorMessage: e.message));
     } catch (e) {
