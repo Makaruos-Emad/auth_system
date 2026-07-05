@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' hide AuthState;
@@ -7,7 +8,37 @@ import 'auth_state.dart';
 class AuthCubit extends Cubit<AuthState> {
   final AuthRepository repository;
 
-  AuthCubit(this.repository) : super(const AuthState());
+  StreamSubscription? _authSubscription;
+  AuthCubit(this.repository) : super(const AuthState()) {
+    _listenToAuthChanges();
+  }
+
+  void _listenToAuthChanges() {
+    _authSubscription = Supabase.instance.client.auth.onAuthStateChange.listen((
+      data,
+    ) {
+      final session = data.session;
+      final user = session?.user;
+
+      if (user != null) {
+        emit(
+          state.copyWith(
+            status: AuthStatus.authenticated,
+            user: user,
+            errorMessage: null,
+          ),
+        );
+      } else {
+        emit(
+          state.copyWith(
+            status: AuthStatus.unauthenticated,
+            user: null,
+            errorMessage: null,
+          ),
+        );
+      }
+    });
+  }
 
   Future<void> signUp({
     required String name,
@@ -24,10 +55,6 @@ class AuthCubit extends Cubit<AuthState> {
         password: password,
         image: image,
       );
-
-      emit(
-        state.copyWith(status: AuthStatus.authenticated, errorMessage: null),
-      );
     } on AuthException catch (e) {
       emit(state.copyWith(status: AuthStatus.error, errorMessage: e.message));
     } catch (e) {
@@ -42,18 +69,11 @@ class AuthCubit extends Cubit<AuthState> {
 
     try {
       await repository.signIn(email: email, password: password);
-
-      emit(
-        state.copyWith(status: AuthStatus.authenticated, errorMessage: null),
-      );
     } on AuthException catch (e) {
       emit(state.copyWith(status: AuthStatus.error, errorMessage: e.message));
     } catch (e) {
       emit(
-        state.copyWith(
-          status: AuthStatus.error,
-          errorMessage: 'Something went wrong',
-        ),
+        state.copyWith(status: AuthStatus.error, errorMessage: e.toString()),
       );
     }
   }
@@ -63,19 +83,18 @@ class AuthCubit extends Cubit<AuthState> {
 
     try {
       await repository.signOut();
-
-      emit(
-        state.copyWith(status: AuthStatus.unauthenticated, errorMessage: null),
-      );
     } on AuthException catch (e) {
       emit(state.copyWith(status: AuthStatus.error, errorMessage: e.message));
     } catch (e) {
       emit(
-        state.copyWith(
-          status: AuthStatus.error,
-          errorMessage: 'Something went wrong',
-        ),
+        state.copyWith(status: AuthStatus.error, errorMessage: e.toString()),
       );
     }
+  }
+
+  @override
+  Future<void> close() {
+    _authSubscription?.cancel();
+    return super.close();
   }
 }

@@ -4,7 +4,6 @@ import 'package:auth_system/core/shared/widget/custom_text_form_field.dart';
 import 'package:auth_system/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:auth_system/features/auth/presentation/cubit/auth_state.dart';
 import 'package:auth_system/features/auth/presentation/widgets/user_image.dart';
-import 'package:auth_system/features/profile/presentation/screens/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -41,15 +40,6 @@ class _RegisterFormState extends State<RegisterForm> {
   Widget build(BuildContext context) {
     return BlocConsumer<AuthCubit, AuthState>(
       listener: (context, state) {
-        if (state.status == AuthStatus.authenticated) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Account created successfully")),
-          );
-          Navigator.of(context).push(
-            MaterialPageRoute(builder: (context) => const ProfileScreen()),
-          );
-        }
-
         if (state.status == AuthStatus.error) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(state.errorMessage ?? "Unknown Error")),
