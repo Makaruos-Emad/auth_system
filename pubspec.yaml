@@ -40,6 +40,7 @@ dependencies:
   supabase_flutter: ^2.15.4
   equatable: ^2.0.8
   get_it: ^9.2.1
+  shared_preferences: ^2.3.0
 
 dev_dependencies:
   flutter_test:
