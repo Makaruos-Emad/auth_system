@@ -42,6 +42,11 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   }
 
   @override
+  Future<void> resetPassword({required String email}) async {
+    await client.auth.resetPasswordForEmail(email);
+  }
+
+  @override
   Future<void> signOut() async {
     await client.auth.signOut();
   }
