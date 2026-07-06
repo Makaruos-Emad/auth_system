@@ -1,10 +1,12 @@
 import 'package:auth_system/core/theme/app_colors.dart';
 import 'package:auth_system/features/auth/presentation/screens/forgot_password_screen.dart';
+import 'package:auth_system/features/profile/presentation/cubit/profile_cubit.dart';
 import 'package:auth_system/features/profile/presentation/screens/edit_profile_screen.dart';
 import 'package:auth_system/features/profile/presentation/widget/border_container.dart';
 import 'package:auth_system/features/profile/presentation/widget/row_item_settings.dart';
 import 'package:auth_system/features/profile/presentation/widget/title_settings.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AccountSettings extends StatelessWidget {
   const AccountSettings({super.key});
@@ -21,12 +23,19 @@ class AccountSettings extends StatelessWidget {
               title: 'Change Information',
               icon: Icons.person,
               onPressed: () {
+                final profile = context.read<ProfileCubit>().state.profile;
+                if (profile == null) return;
+
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const EditProfileScreen(),
+                    builder: (context) => EditProfileScreen(profile: profile),
                   ),
-                );
+                ).then((_) {
+                  if (context.mounted) {
+                    context.read<ProfileCubit>().loadProfile();
+                  }
+                });
               },
             ),
             const Divider(color: AppColors.primaryColor),

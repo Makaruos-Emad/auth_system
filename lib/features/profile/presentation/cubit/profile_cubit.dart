@@ -27,15 +27,24 @@ class ProfileCubit extends Cubit<ProfileState> {
     }
   }
 
-  Future<void> updateProfile() async {
+  Future<void> updateProfile({String? name, String? imageUrl}) async {
     if (state.profile == null) return;
 
-    emit(state.copyWith(status: ProfileStatus.loading));
+    final updatedProfile = state.profile!.copyWith(
+      name: name ?? state.profile!.name,
+      imageUrl: imageUrl ?? state.profile!.imageUrl,
+    );
+
+    emit(
+      state.copyWith(status: ProfileStatus.loading, profile: updatedProfile),
+    );
 
     try {
-      await repository.updateProfile(state.profile!);
+      await repository.updateProfile(updatedProfile);
 
-      emit(state.copyWith(status: ProfileStatus.loaded));
+      emit(
+        state.copyWith(status: ProfileStatus.loaded, profile: updatedProfile),
+      );
     } catch (e) {
       emit(
         state.copyWith(status: ProfileStatus.error, errorMessage: e.toString()),
