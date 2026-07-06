@@ -16,7 +16,7 @@ class AppTheme {
     textTheme: TextTheme(
       headlineMedium: AppTexts.bold24.copyWith(color: AppColors.black),
       bodyMedium: AppTexts.regular14.copyWith(color: AppColors.darkGrey),
-      labelLarge: AppTexts.semiBold16.copyWith(color: Colors.white),
+      labelLarge: AppTexts.semiBold16.copyWith(color: Colors.black),
     ),
 
     elevatedButtonTheme: ElevatedButtonThemeData(

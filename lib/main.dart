@@ -1,5 +1,7 @@
 import 'package:auth_system/core/constants/supabase_keys.dart';
 import 'package:auth_system/core/services/service_locator.dart';
+import 'package:auth_system/core/services/shared_preferences_singleton.dart';
+import 'package:auth_system/core/services/theme_service.dart';
 import 'package:auth_system/core/theme/app_theme.dart';
 import 'package:auth_system/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:auth_system/features/auth/presentation/screens/auth_gate.dart';
@@ -13,7 +15,10 @@ void main() async {
     url: SupabaseKeys.supabaseUrl,
     publishableKey: SupabaseKeys.supabasePublishableKey,
   );
+
+  await Prefs.init();
   setupServiceLocator();
+  await ThemeService.instance.init();
 
   runApp(const AuthSystem());
 }
@@ -25,13 +30,18 @@ class AuthSystem extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [BlocProvider(create: (_) => getIt<AuthCubit>())],
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'Auth System',
-        theme: AppTheme.lightTheme,
-        darkTheme: AppTheme.darkTheme,
-        themeMode: ThemeMode.dark,
-        home: const AuthGate(),
+      child: ValueListenableBuilder<ThemeMode>(
+        valueListenable: ThemeService.instance.themeModeNotifier,
+        builder: (context, themeMode, _) {
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            title: 'Auth System',
+            theme: AppTheme.lightTheme,
+            darkTheme: AppTheme.darkTheme,
+            themeMode: themeMode,
+            home: const AuthGate(),
+          );
+        },
       ),
     );
   }
