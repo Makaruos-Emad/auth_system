@@ -1,4 +1,3 @@
-import 'package:auth_system/core/theme/app_colors.dart';
 import 'package:auth_system/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:auth_system/features/profile/presentation/widget/border_container.dart';
 import 'package:auth_system/features/profile/presentation/widget/row_item_settings.dart';
@@ -24,13 +23,6 @@ class AccountAction extends StatelessWidget {
               onPressed: () {
                 context.read<AuthCubit>().signOut();
               },
-            ),
-            const Divider(color: AppColors.primaryColor),
-            RowItemSettings(
-              title: 'Delete Account',
-              icon: Icons.delete,
-              backgroundColor: Colors.red,
-              onPressed: () {},
             ),
           ],
         ),
